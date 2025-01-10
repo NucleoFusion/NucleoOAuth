@@ -2,42 +2,59 @@
   import { page } from "$app/stores";
   let id = $page.params.id;
 
-  console.log(id);
-
   async function formSubmit(e) {
     e.preventDefault();
   }
+
+  let isLogin = $state(true);
+
+  let onclick = () => {
+    isLogin = !isLogin;
+  };
 </script>
 
 <div class="main-container">
   <div class="title jetbrains-mono">
     <h1>Lapis OAuth</h1>
   </div>
-  <div class="form-container">
-    <form action={formSubmit}>
-      <div class="input-container">
-        <label class="jetbrains-mono" for="name">Name: </label>
-        <input class="jetbrains-mono" type="text" id="name" />
-      </div>
-      <div class="input-container">
-        <label class="jetbrains-mono" for="email">Email: </label>
-        <input class="jetbrains-mono" type="email" id="email" />
-      </div>
-      <div class="input-container">
-        <label class="jetbrains-mono" for="pass">Password: </label>
-        <input class="jetbrains-mono" type="password" id="pass" />
-      </div>
-      <div class="submit-container">
-        <button class="submit-button jetbrains-mono" type="submit">
-          Submit
-        </button>
-      </div>
-    </form>
-  </div>
-  <div class="button-container">
-    <button class="jetbrains-mono">Log In</button>
-    <button class="jetbrains-mono">Sign Up</button>
-  </div>
+  {#key isLogin}
+    <div class="form-container">
+      <form action={formSubmit}>
+        {#if !isLogin}
+          <div class="input-container">
+            <label class="jetbrains-mono" for="name">Name: </label>
+            <input class="jetbrains-mono" type="text" id="name" />
+          </div>
+        {/if}
+        <div class="input-container">
+          <label class="jetbrains-mono" for="email">Email: </label>
+          <input class="jetbrains-mono" type="email" id="email" />
+        </div>
+        <div class="input-container">
+          <label class="jetbrains-mono" for="pass">Password: </label>
+          <input class="jetbrains-mono" type="password" id="pass" />
+        </div>
+        <div class="submit-container">
+          <button class="submit-button jetbrains-mono" type="submit">
+            {#if isLogin}
+              Login
+            {:else}
+              Sign Up
+            {/if}
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="button-container">
+      <button class="jetbrains-mono" {onclick}>
+        {#if isLogin}
+          Sign Up
+        {:else}
+          Login
+        {/if}
+      </button>
+    </div>
+  {/key}
 </div>
 
 <style>
