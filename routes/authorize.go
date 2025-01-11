@@ -1,4 +1,4 @@
-package auth
+package routes
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"lapisoauth/auth"
 	"math/rand"
 	"net/http"
 
@@ -29,12 +30,12 @@ func (s *AuthorizeRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id := generateRandomID(s.Rdb)
 
 	//Declaring the Current Session and Converting to String
-	curr_session := Session{ReturnUrl: returnURL[0], Id: id}
+	curr_session := auth.Session{ReturnUrl: returnURL[0], Id: id}
 	data, _ := json.Marshal(curr_session)
 	session_str := string(data)
 
 	//Writing to Cache the ID and returnURL
-	s.Rdb.Set(context.Background(), id, session_str, ValidTime)
+	s.Rdb.Set(context.Background(), id, session_str, auth.ValidTime)
 
 	//Opening a new window to authenticate user
 	code := fmt.Sprintf("<script>window.open('http://localhost:5173/%s', 'targetWindow', 'menubar=1,resizeable=1,width=500,height=600');</script>", id)

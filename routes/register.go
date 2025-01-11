@@ -1,12 +1,15 @@
-package auth
+package routes
+
+//TODO: Handle if user with same email already exists (dont give refresh_token)
+//TODO: Handle so that no two same refresh_token are generated
 
 import (
 	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
+	"lapisoauth/auth"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -125,7 +128,7 @@ func DecodeBody(body *url.Values) (*RegisterBody, error) {
 				return &user, errors.New("ERROR: invalid parameters provided")
 			}
 
-			hashed, err := HashPassword(v[0])
+			hashed, err := auth.HashPassword(v[0])
 			if err != nil {
 				return &user, err
 			}
@@ -138,9 +141,7 @@ func DecodeBody(body *url.Values) (*RegisterBody, error) {
 }
 
 func WriteToDB(db *sql.DB, user *RegisterBody, delKey chan bool, GetAccessToken chan string, WriteToken chan bool, dbError chan error, tokenWritten chan bool) {
-	user.RefreshToken = GenerateToken(user.Name + user.Email + user.Name)
-
-	fmt.Println(user)
+	user.RefreshToken = auth.GenerateToken(user.Name + user.Email + user.Name)
 
 	res := db.QueryRow("INSERT INTO users(name, email, password, refresh_token) VALUES ($1, $2, $3, $4) RETURNING id", user.Name, user.Email, user.Password, user.RefreshToken)
 
@@ -182,10 +183,10 @@ func MatchIDWithSessions(rdb *redis.Client, id string, matchFound chan bool, err
 }
 
 func WriteAccessToken(rdb *redis.Client, user *RegisterBody, writeToken chan bool, SendToken chan string) {
-	token := GenerateToken("ACCESS:" + user.Name + user.Email)
+	token := auth.GenerateToken("ACCESS:" + user.Name + user.Email)
 
 	if <-writeToken {
-		rdb.Set(context.Background(), "ACCESS:"+strconv.Itoa(user.UserID), token, AccessExpiry)
+		rdb.Set(context.Background(), "ACCESS:"+strconv.Itoa(user.UserID), token, auth.AccessExpiry)
 		SendToken <- token
 	}
 }
