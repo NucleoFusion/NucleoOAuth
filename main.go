@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"lapisoauth/auth"
 	"lapisoauth/cache"
 	"lapisoauth/db"
+	"lapisoauth/routes"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func main() {
 	}
 
 	//Initializing the root Mux Server
-	mux := auth.InitMux(rdb, db)
+	mux := routes.InitMux(rdb, db)
 
 	fmt.Println("Listening at :5544...")
 	http.ListenAndServe(":5544", mux)

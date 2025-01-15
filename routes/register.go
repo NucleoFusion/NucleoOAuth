@@ -1,8 +1,5 @@
 package routes
 
-//TODO: Handle if user with same email already exists (dont give refresh_token)
-//TODO: Handle so that no two same refresh_token are generated
-
 import (
 	"context"
 	"database/sql"
@@ -26,6 +23,7 @@ type RegisterRoute struct {
 
 func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	//Getting Session ID
 	id := r.PathValue("id")
@@ -55,13 +53,14 @@ func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	dbError := make(chan error, 1)
 	tokenWritten := make(chan bool, 1) // Tell main thread that token was written
+	userExists := make(chan bool, 1)   // Tell main thread whether user exists
 
 	writeToken := make(chan bool, 1) // Tell WriteAccessToken goroutine to Write the AccessToken to cache
 	GetToken := make(chan string, 1) // Give the AccessToken created to the WriteToDB goroutine
 
 	//Matching ID with current Session and Writing To DB
 	go MatchIDWithSessions(s.Rdb, id, matchFound, matchError, delSession)
-	go WriteToDB(s.Db, user, delSession, GetToken, writeToken, dbError, tokenWritten)
+	go WriteToDB(s.Db, user, delSession, GetToken, writeToken, dbError, tokenWritten, userExists)
 	go WriteAccessToken(s.Rdb, user, writeToken, GetToken)
 
 	// if sessionids was not found
@@ -84,6 +83,11 @@ func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if <-userExists {
+		io.WriteString(w, "ERROR: user with email already exists")
+		return
+	}
+
 	delSession <- true
 	<-tokenWritten
 
@@ -94,7 +98,7 @@ func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 //Indirectly Route Related
 
 type RegisterBody struct {
-	UserID       int    `json:"user_id"`
+	UserID       int    `json:"-"`
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Password     string `json:"-"`
@@ -123,7 +127,7 @@ func DecodeBody(body *url.Values) (*RegisterBody, error) {
 			}
 
 			user.Email = v[0]
-		case "password":
+		case "pass":
 			if len(v) == 0 && v[0] == "" {
 				return &user, errors.New("ERROR: invalid parameters provided")
 			}
@@ -140,12 +144,25 @@ func DecodeBody(body *url.Values) (*RegisterBody, error) {
 	return &user, nil
 }
 
-func WriteToDB(db *sql.DB, user *RegisterBody, delKey chan bool, GetAccessToken chan string, WriteToken chan bool, dbError chan error, tokenWritten chan bool) {
+func WriteToDB(db *sql.DB, user *RegisterBody, delKey chan bool, GetAccessToken chan string, WriteToken chan bool, dbError chan error, tokenWritten chan bool, userExists chan bool) {
+	var id int
+
+	checkUser := db.QueryRow("SELECT id FROM users WHERE email = $1", user.Email)
+
+	err := checkUser.Scan(&id)
+	if err == sql.ErrNoRows {
+		userExists <- false
+	} else if err != nil {
+		dbError <- err
+	} else {
+		userExists <- true
+	}
+
 	user.RefreshToken = auth.GenerateToken(user.Name + user.Email + user.Name)
 
 	res := db.QueryRow("INSERT INTO users(name, email, password, refresh_token) VALUES ($1, $2, $3, $4) RETURNING id", user.Name, user.Email, user.Password, user.RefreshToken)
 
-	err := res.Scan(&user.UserID)
+	err = res.Scan(&user.UserID)
 	if err != nil {
 		dbError <- err
 	}

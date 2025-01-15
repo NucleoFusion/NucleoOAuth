@@ -13,6 +13,7 @@ func InitMux(rdb *redis.Client, db *sql.DB) *http.ServeMux {
 
 	mux.Handle("GET /authorize", &AuthorizeRoute{Rdb: rdb, Db: db})
 	mux.Handle("POST /register/{id}", &RegisterRoute{Rdb: rdb, Db: db})
+	mux.Handle("POST /newAccess", &RefreshRoute{Rdb: rdb, Db: db})
 
 	return mux
 }

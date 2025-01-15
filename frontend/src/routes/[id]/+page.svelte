@@ -1,9 +1,41 @@
 <script>
   import { page } from "$app/stores";
+  import axios from "axios";
+
+  import jq from "jquery";
+
+  import { PUBLIC_API_URL } from "$env/static/public";
+
   let id = $page.params.id;
 
   async function formSubmit(e) {
     e.preventDefault();
+
+    let url = `${PUBLIC_API_URL}/`;
+
+    if (isLogin) {
+      url += `login/${id}`;
+    } else {
+      url += `register/${id}`;
+    }
+
+    console.log(url);
+
+    const headers = {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    };
+
+    const data = {
+      email: jq("input[name='email']").val(),
+      name: jq("input[name='name']").val(),
+      pass: jq("input[name='pass']").val(),
+    };
+
+    console.log(data);
+
+    const result = await axios.post(url, data, headers);
+
+    console.log(result.data);
   }
 
   let isLogin = $state(true);
@@ -19,20 +51,20 @@
   </div>
   {#key isLogin}
     <div class="form-container">
-      <form action={formSubmit}>
+      <form onsubmit={formSubmit}>
         {#if !isLogin}
           <div class="input-container">
             <label class="jetbrains-mono" for="name">Name: </label>
-            <input class="jetbrains-mono" type="text" id="name" />
+            <input class="jetbrains-mono" type="text" id="name" name="name" />
           </div>
         {/if}
         <div class="input-container">
           <label class="jetbrains-mono" for="email">Email: </label>
-          <input class="jetbrains-mono" type="email" id="email" />
+          <input class="jetbrains-mono" type="email" id="email" name="email" />
         </div>
         <div class="input-container">
           <label class="jetbrains-mono" for="pass">Password: </label>
-          <input class="jetbrains-mono" type="password" id="pass" />
+          <input class="jetbrains-mono" type="password" id="pass" name="pass" />
         </div>
         <div class="submit-container">
           <button class="submit-button jetbrains-mono" type="submit">
