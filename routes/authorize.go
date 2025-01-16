@@ -19,18 +19,11 @@ type AuthorizeRoute struct {
 }
 
 func (s *AuthorizeRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//Getting Return URL
-	returnURL := r.URL.Query()["returnURL"]
-	if len(returnURL) == 0 {
-		io.WriteString(w, "ERROR: No ReturnUrl provided in Query Params")
-		return
-	}
-
 	//Generating a random ID for current session
 	id := generateRandomID(s.Rdb)
 
 	//Declaring the Current Session and Converting to String
-	curr_session := auth.Session{ReturnUrl: returnURL[0], Id: id}
+	curr_session := auth.Session{Id: id}
 	data, _ := json.Marshal(curr_session)
 	session_str := string(data)
 
