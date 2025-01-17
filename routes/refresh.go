@@ -35,7 +35,7 @@ func (s *RefreshRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Getting Refresh Token and verifying its existence
 	val, ok := body["refresh_token"]
 	if !ok {
-		io.WriteString(w, "ERROR: missing and/or invalid parameters provided")
+		WriteError(&w, "ERROR: missing and/or invalid parameters provided")
 	}
 
 	refresh_token := val[0]
@@ -55,13 +55,13 @@ func (s *RefreshRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go CreateNewRefreshToken(s.Db, userDataRefresh, getNewRefresh)
 
 	if !(<-userExists) {
-		io.WriteString(w, "ERROR: no user with refresh_token found, the token may have been regenerated please authenticate again")
+		WriteError(&w, "ERROR: no user with refresh_token found, the token may have been regenerated please authenticate again")
 		return
 	}
 
 	err := <-cacheError
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 

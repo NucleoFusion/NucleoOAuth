@@ -31,14 +31,14 @@ func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//Parsing Form and collecting Data
 	err := r.ParseForm()
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
 	body := r.PostForm
 	user, err := DecodeBody(&body)
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
@@ -65,26 +65,26 @@ func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// if sessionids was not found
 	if !(<-matchFound) {
-		io.WriteString(w, "ERROR: no session with this id found, create a new session")
+		WriteError(&w, "ERROR: no session with this id found, create a new session")
 		return
 	}
 
 	// if error occured while matching session ids
 	err = <-matchError
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
 	// if error occured while Writiing to DB
 	err = <-dbError
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
 	if <-userExists {
-		io.WriteString(w, "ERROR: user with email already exists")
+		WriteError(&w, "ERROR: user with email already exists")
 		return
 	}
 
@@ -112,34 +112,27 @@ type RegisterBody struct {
 func DecodeBody(body *url.Values) (*RegisterBody, error) {
 	user := RegisterBody{}
 
-	for k, v := range *body {
-		switch k {
-		case "name":
-			if len(v) == 0 && v[0] == "" {
-				return &user, errors.New("ERROR: invalid parameters provided")
-			}
+	name, okName := (*body)["name"]
+	email, okEmail := (*body)["name"]
+	pass, okPass := (*body)["pass"]
 
-			user.Name = v[0]
-
-		case "email":
-			if len(v) == 0 && v[0] == "" {
-				return &user, errors.New("ERROR: invalid parameters provided")
-			}
-
-			user.Email = v[0]
-		case "pass":
-			if len(v) == 0 && v[0] == "" {
-				return &user, errors.New("ERROR: invalid parameters provided")
-			}
-
-			hashed, err := auth.HashPassword(v[0])
-			if err != nil {
-				return &user, err
-			}
-
-			user.Password = hashed
-		}
+	if !(okName && okEmail && okPass) {
+		return &user, errors.New("ERROR: invalid and/or missing parameters")
 	}
+
+	if name[0] == "" || email[0] == "" || pass[0] == "" {
+		return &user, errors.New("ERROR: invalid and/or missing parameters")
+	}
+
+	user.Name = name[0]
+	user.Email = email[0]
+
+	hashed, err := auth.HashPassword(pass[0])
+	if err != nil {
+		return &user, err
+	}
+
+	user.Password = hashed
 
 	return &user, nil
 }

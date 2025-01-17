@@ -33,14 +33,14 @@ func (s *LoginRuote) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//Parsing Form and collecting Data
 	err := r.ParseForm()
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
 	body := r.PostForm
 	user, err := DecodeLoginBody(&body)
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
@@ -55,29 +55,29 @@ func (s *LoginRuote) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = <-matchError
 	if err != nil {
 		fmt.Println(err.Error())
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
 	if !(<-matchFound) {
-		io.WriteString(w, "ERROR: no current session with given id found")
+		WriteError(&w, "ERROR: no current session with given id found")
 		return
 	}
 
 	matches, err := FindingUserAndMatchPasswords(s.Db, &user)
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
 	if !matches {
-		io.WriteString(w, "ERROR: invalid password")
+		WriteError(&w, "ERROR: invalid password")
 		return
 	}
 
 	err = CreateAndStoreNewTokens(s.Db, s.Rdb, &user)
 	if err != nil {
-		io.WriteString(w, err.Error())
+		WriteError(&w, err.Error())
 		return
 	}
 
