@@ -7,6 +7,13 @@
   import { PUBLIC_API_URL } from "$env/static/public";
 
   let id = $page.params.id;
+  let error = $state("");
+
+  $effect(() => {
+    if (error != "") {
+      jq(".popup").focus();
+    }
+  });
 
   async function formSubmit(e) {
     e.preventDefault();
@@ -19,8 +26,6 @@
       url += `register/${id}`;
     }
 
-    console.log(url);
-
     const headers = {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
     };
@@ -31,14 +36,18 @@
       pass: jq("input[name='pass']").val(),
     };
 
-    console.log(data);
-
     const result = await axios.post(url, data, headers);
 
-    console.log(result.data);
+    if (result.data.error) {
+      error = result.data.error;
+    }
   }
 
   let isLogin = $state(true);
+
+  function popdown(e) {
+    console.log(e);
+  }
 
   let onclick = () => {
     isLogin = !isLogin;
@@ -86,6 +95,19 @@
         {/if}
       </button>
     </div>
+  {/key}
+  {#key error}
+    {#if error != ""}
+      <div
+        class="popup"
+        tabindex="-1"
+        onkeypress={(e) => {
+          e.keyCode == 13 ? (error = "") : error;
+        }}
+      >
+        <h3>{error}</h3>
+      </div>
+    {/if}
   {/key}
 </div>
 
@@ -177,5 +199,19 @@
     height: 5vh;
 
     font-size: 1em;
+  }
+
+  .popup {
+    width: 50vw;
+    height: 50vh;
+
+    left: 25vw;
+    top: 25vh;
+
+    background-color: gray;
+
+    position: fixed;
+
+    z-index: 11;
   }
 </style>

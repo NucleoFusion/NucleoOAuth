@@ -1,7 +1,6 @@
 package routes
 
-//TODO: Change Error management and sending
-//TODO: Decode Body change in Register Route
+//TODO: delSession not handled
 
 import (
 	"context"
@@ -13,6 +12,7 @@ import (
 	"lapisoauth/auth"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
@@ -25,7 +25,7 @@ type LoginRuote struct {
 
 func (s *LoginRuote) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 
 	//Getting Session ID
 	id := r.PathValue("id")
@@ -52,15 +52,15 @@ func (s *LoginRuote) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	go MatchIDWithSessions(s.Rdb, id, matchFound, matchError, delSession)
 
+	if !(<-matchFound) {
+		WriteError(&w, "ERROR: no current session with given id found")
+		return
+	}
+
 	err = <-matchError
 	if err != nil {
 		fmt.Println(err.Error())
 		WriteError(&w, err.Error())
-		return
-	}
-
-	if !(<-matchFound) {
-		WriteError(&w, "ERROR: no current session with given id found")
 		return
 	}
 
@@ -80,6 +80,10 @@ func (s *LoginRuote) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		WriteError(&w, err.Error())
 		return
 	}
+
+	SetCookieHeader(&w, "access_token", user.AccessToken)
+	SetCookieHeader(&w, "refresh_token", user.RefreshToken)
+	SetCookieHeader(&w, "token_type", user.TokenType)
 
 	data, _ := json.Marshal(user)
 	io.Writer.Write(w, data)
@@ -182,4 +186,14 @@ func DecodeLoginBody(body *url.Values) (RegisterBody, error) {
 	user.Email = email[0]
 
 	return user, nil
+}
+
+func SetCookieHeader(w *http.ResponseWriter, name string, value string) {
+	cookie := http.Cookie{
+		Name:    name,
+		Value:   value,
+		Expires: time.Now().Add(auth.AccessExpiry),
+	}
+
+	http.SetCookie(*w, &cookie)
 }

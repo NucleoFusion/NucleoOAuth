@@ -10,4 +10,4 @@ type Session struct {
 }
 
 var ValidTime, _ = time.ParseDuration("1h")
-var AccessExpiry, _ = time.ParseDuration("6h")
+var AccessExpiry, _ = time.ParseDuration("24h")

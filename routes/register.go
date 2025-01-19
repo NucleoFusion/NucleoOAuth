@@ -91,6 +91,10 @@ func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	delSession <- true
 	<-tokenWritten
 
+	SetCookieHeader(&w, "access_token", user.AccessToken)
+	SetCookieHeader(&w, "refresh_token", user.RefreshToken)
+	SetCookieHeader(&w, "token_type", user.TokenType)
+
 	data, _ := json.Marshal(user)
 	io.Writer.Write(w, data)
 }
