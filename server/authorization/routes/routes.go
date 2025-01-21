@@ -7,6 +7,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// TODO: Get Data from Access Token route
+
 func InitMux(rdb *redis.Client, db *sql.DB) *http.ServeMux {
 	//Initializing a MUX to handle authorization related requests
 	mux := http.NewServeMux()
