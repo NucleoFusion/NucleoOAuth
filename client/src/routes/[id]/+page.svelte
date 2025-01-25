@@ -116,13 +116,6 @@
     padding: 0;
   }
 
-  :global(.jetbrains-mono) {
-    font-family: "JetBrains Mono", serif;
-    font-optical-sizing: auto;
-    font-weight: 400;
-    font-style: normal;
-  }
-
   .main-container {
     width: 90vw;
     height: 90vh;

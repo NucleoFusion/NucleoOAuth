@@ -1,0 +1,142 @@
+.doc-container {
+  width: 98vw;
+  height: 96vh;
+
+  margin: 2vh 0.75vw;
+
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: 1fr;
+
+  gap: 0.75vw;
+
+  color: #1e1e2e;
+}
+
+.doc-container>div {
+  background-color: #b4befe;
+
+  border-radius: 10px;
+}
+
+.navigator>div:first-child {
+  font-size: 2.25em;
+
+  text-align: center;
+
+  margin: 2vh;
+}
+
+.navigator>div:has(button) {
+  height: 5vh;
+}
+
+.navigator>hr {
+  color: #1e1e2e;
+
+  margin: 0vh 1vw;
+  margin-bottom: 1vh;
+}
+
+.navigator>div>button {
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+
+  border: none;
+
+  text-align: left;
+
+  padding: 0vh 2vw;
+
+  font-size: 1.25em;
+
+  background-color: inherit;
+}
+
+.navigator>div:has(button:hover),
+.navigator>div:has(button:disabled) {
+  background-color: #1e1e2e;
+
+  border: solid #b4befe 1px;
+}
+
+.navigator>div>button:disabled {
+  opacity: 1;
+
+  color: #b4befe;
+
+  cursor: not-allowed;
+}
+
+.navigator>div {
+  transition: all 0.3s ease-in-out;
+}
+
+.navigator>div>button:not(:disabled):hover {
+  color: #b4befe;
+  cursor: pointer;
+}
+
+.Introduction-container {
+  padding: 2vh 2vw;
+}
+
+.Introduction-container .title-container h1 {
+  font-size: 3.5em;
+}
+
+.Introduction-container .title-container p {
+  width: 60vw;
+
+  margin-left: 3vw;
+}
+
+.Introduction-container .sub-container {
+  margin-left: 3vw;
+}
+
+.Introduction-container .sub-container h3 {
+  font-size: 2.5em;
+}
+
+.Introduction-container .sub-container p {
+  margin-left: 3vw;
+}
+
+.Routes-container {
+  padding: 2vh 2vw;
+}
+
+.Routes-container>h1 {
+  font-size: 3.5em;
+}
+
+.Routes-container>div {
+  margin-left: 3vw;
+}
+
+.Routes-container .route h2 {
+  font-size: 2em;
+}
+
+.Routes-container .route>*:not(:first-child) {
+  margin-left: 3vw;
+}
+
+.route h3 {
+  font-size: 1.75em;
+}
+
+.route>div>*:not(:first-child) {
+  margin-left: 3vw;
+}
+
+.params h4 {
+  font-size: 1.35em;
+}
+
+.params>div>*:not(:first-child) {
+  margin-left: 3vw;
+}
