@@ -81,6 +81,7 @@ func (s *LoginRuote) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	SetCookieHeader(&w, "user_id", string(user.UserID))
 	SetCookieHeader(&w, "access_token", user.AccessToken)
 	SetCookieHeader(&w, "refresh_token", user.RefreshToken)
 	SetCookieHeader(&w, "token_type", user.TokenType)

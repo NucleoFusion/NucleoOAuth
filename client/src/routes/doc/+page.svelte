@@ -20,6 +20,9 @@
   });
 </script>
 
+<div class="home-button-div">
+  <button>Home</button>
+</div>
 <div class="doc-container jetbrains-mono">
   <div class="navigator">
     <div>Lapis OAuth</div>

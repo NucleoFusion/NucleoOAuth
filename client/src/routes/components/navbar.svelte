@@ -73,4 +73,37 @@
 
     border: solid #1e1e2e 1px;
   }
+
+  @media (max-width: 1000px) {
+    .navbar button {
+      width: 15vw;
+    }
+
+    .navbar {
+      width: 45vw;
+      left: 24.5vw;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .navbar button {
+      width: 15vw;
+    }
+
+    .navbar {
+      width: 55vw;
+      left: 19.5vw;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .navbar button {
+      width: 25vw;
+    }
+
+    .navbar {
+      width: 75vw;
+      left: 9.5vw;
+    }
+  }
 </style>

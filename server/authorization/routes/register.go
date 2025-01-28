@@ -102,7 +102,7 @@ func (s *RegisterRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 //Indirectly Route Related
 
 type RegisterBody struct {
-	UserID       int    `json:"-"`
+	UserID       int    `json:"user_id"`
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Password     string `json:"-"`

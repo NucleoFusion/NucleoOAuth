@@ -13,10 +13,19 @@
   color: #1e1e2e;
 }
 
+.home-button-div {
+  position: fixed;
+
+  top: 2vh;
+  right: 2vh;
+}
+
 .doc-container>div {
   background-color: #b4befe;
 
   border-radius: 10px;
+
+  overflow: scroll;
 }
 
 .navigator>div:first-child {
@@ -105,15 +114,18 @@
   margin-left: 3vw;
 }
 
-.Routes-container {
+.Routes-container,
+.About-container {
   padding: 2vh 2vw;
 }
 
-.Routes-container>h1 {
+.Routes-container>h1,
+.About-container>h1 {
   font-size: 3.5em;
 }
 
-.Routes-container>div {
+.Routes-container>div,
+.About-container>div {
   margin-left: 3vw;
 }
 
@@ -139,4 +151,52 @@
 
 .params>div>*:not(:first-child) {
   margin-left: 3vw;
+}
+
+.about-details>*:not(:first-child) {
+  margin-left: 3vw;
+}
+
+.about-details>h2 {
+  font-size: 2em;
+}
+
+.links {
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+
+.links>div {
+  height: 100%;
+  width: 100%;
+
+  display: grid;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.links button {
+  width: 7.5vw;
+  height: 4vh;
+
+  font-size: 1em;
+
+  border: none;
+  border: solid #1e1e2e 1px;
+  border-radius: 10px;
+
+  background-color: #b4befe;
+}
+
+.links button:hover {
+  background-color: #1e1e2e;
+
+  cursor: pointer;
+
+  color: #b4befe;
 }

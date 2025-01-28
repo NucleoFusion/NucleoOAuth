@@ -19,6 +19,7 @@ type RefreshRoute struct {
 }
 
 type RefreshResponse struct {
+	Id           int    `json:"user_id"`
 	RefreshToken string `json:"refresh_token"`
 	AccessToken  string `json:"access_token"`
 	Type         string `json:"type"`
@@ -43,6 +44,7 @@ func (s *RefreshRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//Declaring Channels
 	userExists := make(chan bool, 1)
 	userDataAccess := make(chan string) // Communicate between WriteAccessToCacheRefresh and UserExistsRefresh for user data
+	getUserId := make(chan int, 1)
 
 	userDataRefresh := make(chan string) // Communicate between CreateNewRefreshToken and UserExistsRefresh for user data
 	getNewRefresh := make(chan string, 1)
@@ -50,7 +52,7 @@ func (s *RefreshRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cacheError := make(chan error, 1)
 	getAccessToken := make(chan string, 1) // Get generated access token in main thread
 
-	go UserExistsRefresh(s.Db, refresh_token, userExists, userDataAccess, userDataRefresh)
+	go UserExistsRefresh(s.Db, refresh_token, userExists, userDataAccess, userDataRefresh, getUserId)
 	go WriteAccessToCacheRefresh(s.Rdb, cacheError, userDataAccess, getAccessToken)
 	go CreateNewRefreshToken(s.Db, userDataRefresh, getNewRefresh)
 
@@ -69,6 +71,7 @@ func (s *RefreshRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	newRefresh := <-getNewRefresh
 
 	response := RefreshResponse{
+		Id:           <-getUserId,
 		AccessToken:  newAccess,
 		RefreshToken: newRefresh,
 		Type:         "Bearer",
@@ -79,7 +82,7 @@ func (s *RefreshRoute) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	io.Writer.Write(w, data)
 }
 
-func UserExistsRefresh(db *sql.DB, refresh_token string, userExists chan bool, giveDataAccess chan string, giveDataRefresh chan string) {
+func UserExistsRefresh(db *sql.DB, refresh_token string, userExists chan bool, giveDataAccess chan string, giveDataRefresh chan string, giveUserId chan int) {
 	var (
 		id    int
 		name  string
@@ -106,6 +109,8 @@ func UserExistsRefresh(db *sql.DB, refresh_token string, userExists chan bool, g
 	giveDataRefresh <- email
 
 	userExists <- true
+
+	giveUserId <- id
 }
 
 func WriteAccessToCacheRefresh(rdb *redis.Client, cacheError chan error, getUserData chan string, giveAccessToken chan string) {

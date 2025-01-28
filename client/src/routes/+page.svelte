@@ -63,6 +63,7 @@
 
     justify-content: center;
     align-items: center;
+    text-align: center;
 
     color: #b4befe;
   }
@@ -70,7 +71,7 @@
   .home-heading > h1 {
     margin: 0;
 
-    font-size: 12vh;
+    font-size: 8em;
   }
 
   .home-description > p {
@@ -108,5 +109,52 @@
     justify-content: center;
     align-items: center;
     text-align: center;
+  }
+
+  @media (max-width: 1410px) {
+    .home-heading h1 {
+      font-size: 6em;
+    }
+  }
+
+  @media (max-width: 1070px) {
+    .home-heading h1 {
+      font-size: 4em;
+    }
+
+    .home-links button {
+      width: 15vw;
+    }
+  }
+
+  @media (max-width: 715px) {
+    .home-container {
+      width: 80vw;
+
+      margin-left: 8vw;
+    }
+
+    .home-links button {
+      width: 17.5vw;
+    }
+  }
+
+  @media (max-width: 525px) {
+    .home-container {
+      width: 90vw;
+
+      margin-left: 3vw;
+    }
+
+    .home-links button {
+      width: 22.5vw;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .home-links {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+    }
   }
 </style>
