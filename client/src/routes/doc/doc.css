@@ -16,8 +16,52 @@
 .home-button-div {
   position: fixed;
 
-  top: 2vh;
-  right: 2vh;
+  top: 3.5vh;
+  right: 1.5vw;
+}
+
+.home-button-div button {
+  width: 5vw;
+  height: 4vh;
+
+  font-size: 1.3em;
+
+  background-color: #1e1e2e;
+  color: #b4befe;
+
+  font-weight: 700;
+
+  border: solid #1e1e2e 1px;
+  border-radius: 10px;
+}
+
+.home-button-div button:hover {
+  cursor: pointer;
+  background-color: #b4befe;
+
+  color: #1e1e2e;
+}
+
+@media (max-width: 1440px) {
+  .home-button-div button {
+    width: 10vw;
+  }
+}
+
+@media (max-width: 750px) {
+  .home-button-div button {
+    width: 15vw;
+  }
+
+  .home-button-div {
+    right: 5vw;
+  }
+}
+
+@media (max-width: 460px) {
+  .home-button-div button {
+    width: 20vw;
+  }
 }
 
 .doc-container>div {
@@ -199,4 +243,79 @@
   cursor: pointer;
 
   color: #b4befe;
+}
+
+@media (max-width: 750px) {
+  .doc-container {
+    height: auto;
+
+    width: 94.5vw;
+
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr;
+  }
+
+
+  .Introduction-container .sub-container p {
+    margin-left: 5vw;
+  }
+
+  .Introduction-container .title-container p {
+    margin-left: 5vw;
+  }
+
+  .Introduction-container .sub-container {
+    margin-left: 5vw;
+  }
+
+  .params>div>*:not(:first-child) {
+    margin-left: 5vw;
+  }
+
+  .about-details>*:not(:first-child) {
+    margin-left: 5vw;
+  }
+
+  .Routes-container .route>*:not(:first-child) {
+    margin-left: 5vw;
+  }
+
+  .Routes-container>div,
+  .About-container>div {
+    margin-left: 5vw;
+  }
+
+  .links button {
+    width: 15vw;
+  }
+
+  .Introduction-container .title-container h1 {
+    font-size: 2.5em;
+  }
+
+  .sub-container h3 {
+    font-size: 1.5em !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .doc-container {
+    width: 94vw;
+  }
+
+  .navigator>div:first-child {
+    margin-top: 4vh;
+  }
+
+  .links {
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 2vw;
+  }
+
+  .links button {
+    width: 20vw;
+  }
+
 }
